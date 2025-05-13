@@ -1,4 +1,4 @@
-import { Model } from "@/components/processing/ModelSelector";
+import { Model } from "../components/ModelSelector";
 
 export interface Detection {
   box: number[];
@@ -25,24 +25,6 @@ export interface ProcessingOptions {
   enableKeypoints: boolean;
 }
 
-// Helper function to determine the appropriate endpoint based on enabled capabilities
-function getProcessingEndpoint({ enableDetection, enableSegmentation, enableKeypoints }: ProcessingOptions): string {
-  const key = [enableDetection, enableSegmentation, enableKeypoints].map(v => (v ? "1" : "0")).join("");
-  const endpointMap: Record<string, string> = {
-    "111": "/process_all",
-    "110": "/process_detection_segmentation",
-    "101": "/process_detection_keypoints",
-    "011": "/process_segmentation_keypoints",
-    "100": "/process_detection",
-    "010": "/process_segmentation",
-    "001": "/process_keypoints"
-  };
-  const endpoint = endpointMap[key];
-  if (!endpoint) throw new Error('At least one capability must be enabled');
-  return endpoint;
-}
-
-
 export async function processImage(
   file: File, 
   options: ProcessingOptions
@@ -52,6 +34,7 @@ export async function processImage(
       throw new Error("Invalid file provided");
     }
 
+    // Create form data with all required parameters
     const formData = new FormData();
     formData.append("image", file);
     formData.append("modelId", options.modelId);
@@ -59,15 +42,11 @@ export async function processImage(
     formData.append("enableSegmentation", options.enableSegmentation.toString());
     formData.append("enableKeypoints", options.enableKeypoints.toString());
 
-    const flaskServerUrl = process.env.NEXT_PUBLIC_FLASK_SERVER_URL;
-    if (!flaskServerUrl) {
-      throw new Error("Flask server URL is not configured");
-    }
-
-    // Get the appropriate endpoint based on enabled capabilities
-    const endpoint = getProcessingEndpoint(options);
+    // Use a hardcoded local URL for the tutorial
+    const flaskServerUrl = "http://localhost:5000"; // Flask default port
     
-    const response = await fetch(`${flaskServerUrl}${endpoint}`, {
+    // Use a single endpoint for processing
+    const response = await fetch(`${flaskServerUrl}/process`, {
       method: "POST",
       body: formData,
     });
@@ -78,13 +57,9 @@ export async function processImage(
     }
 
     const data = await response.json();
+    
     if (!data.success) {
       throw new Error(data.error || "Image processing failed");
-    }
-
-    console.log("Response data:", data);
-    if (!data.image) {
-      throw new Error("No image data returned from server");
     }
 
     return {

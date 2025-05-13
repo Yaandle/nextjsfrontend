@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { FileUpload } from "@/components/ui/file-upload";
-import { processImage } from "@/lib/imageProcessing";
-import type { ProcessedResult, ProcessingOptions } from "@/lib/imageProcessing";
+import { FileUpload } from "../components/ui/file-upload";
+import { processImage } from "../lib/imageProcessing";
+import type { ProcessedResult, ProcessingOptions } from "../lib/imageProcessing";
 
 interface ImageUploadProps {
   onProcessingStart?: () => void;

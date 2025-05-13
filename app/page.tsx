@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import ImageUploader from "@/components/processing/ImageUploader";
-import ImageDisplay from "@/components/processing/ImageDisplay";
-import DataDisplay from "@/components/processing/DataDisplay";
-import { DetectionData } from "@/lib/dataProcessing";
-import type { ProcessedResult } from "@/lib/imageProcessing";
-import ModelSelector from "@/components/processing/ModelSelector";
+import ImageUploader from "../components/ImageUploader";
+import ImageDisplay from "../components/ImageDisplay";
+import DataDisplay from "../components/DataDisplay";
+import { DetectionData } from "../lib/dataProcessing";
+import type { ProcessedResult } from "../lib/imageProcessing";
+import ModelSelector from "../components/ModelSelector";
 
 interface ProcessState {
   processedImage: string | null;

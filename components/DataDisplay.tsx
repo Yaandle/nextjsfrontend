@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { formatDetectionData, DetectionData } from '../../../lib/dataProcessing';
+import { formatDetectionData, DetectionData } from '@/../lib/dataProcessing';
 
 interface DataDisplayProps {
   detectionData: DetectionData[] | null;
