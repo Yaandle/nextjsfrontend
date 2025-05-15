@@ -15,15 +15,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelSel
   const models: Model[] = [
     {
       id: 'strawberry',
-      name: 'Strawberry Model',
+      name: 'Strawberry',
       capabilities: ['detection', 'segmentation', 'keypoints']
-    },
-    // Future models will be added here
-    // {
-    //   id: 'apple',
-    //   name: 'Apple Model',
-    //   capabilities: ['detection', 'segmentation', 'keypoints']
-    // },
+    }
   ];
 
   return (

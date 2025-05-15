@@ -19,14 +19,23 @@ export interface ProcessedResult {
 }
 
 export interface ProcessingOptions {
-  modelId: string;
+  modelId?: string;
+  modelName: string;
   enableDetection: boolean;
   enableSegmentation: boolean;
   enableKeypoints: boolean;
 }
 
+/**
+ * Processes an image using the YOLOv8 models running on the Flask backend.
+ * Sends image and capability flags to the '/process' route.
+ * 
+ * @param file - The image file to process
+ * @param options - Processing options specifying enabled tasks
+ * @returns ProcessedResult including base64 image and detection data
+ */
 export async function processImage(
-  file: File, 
+  file: File,
   options: ProcessingOptions
 ): Promise<ProcessedResult> {
   try {
@@ -34,18 +43,19 @@ export async function processImage(
       throw new Error("Invalid file provided");
     }
 
-    // Create form data with all required parameters
+    if (!options.modelName) {
+      throw new Error("modelName is required but missing");
+    }
+
     const formData = new FormData();
     formData.append("image", file);
-    formData.append("modelId", options.modelId);
+    formData.append("modelName", options.modelName);
     formData.append("enableDetection", options.enableDetection.toString());
     formData.append("enableSegmentation", options.enableSegmentation.toString());
     formData.append("enableKeypoints", options.enableKeypoints.toString());
 
-    // Use a hardcoded local URL for the tutorial
-    const flaskServerUrl = "http://localhost:5000"; // Flask default port
-    
-    // Use a single endpoint for processing
+    const flaskServerUrl = "http://localhost:5000";
+
     const response = await fetch(`${flaskServerUrl}/process`, {
       method: "POST",
       body: formData,
@@ -56,8 +66,13 @@ export async function processImage(
       throw new Error(`Server error (${response.status}): ${errorText}`);
     }
 
-    const data = await response.json();
-    
+    const data: {
+      success: boolean;
+      image?: string;
+      detections?: Detection[];
+      error?: string;
+    } = await response.json();
+
     if (!data.success) {
       throw new Error(data.error || "Image processing failed");
     }
@@ -70,4 +85,41 @@ export async function processImage(
     console.error("[Image Processing Error]:", error);
     throw error;
   }
+}
+
+/**
+ * Checks if a given task is enabled in the options.
+ */
+export function isTaskEnabled(
+  options: ProcessingOptions,
+  task: "detection" | "segmentation" | "keypoints"
+): boolean {
+  switch (task) {
+    case "detection":
+      return options.enableDetection;
+    case "segmentation":
+      return options.enableSegmentation;
+    case "keypoints":
+      return options.enableKeypoints;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Returns the count of enabled tasks.
+ */
+export function getEnabledTaskCount(options: ProcessingOptions): number {
+  return [
+    options.enableDetection,
+    options.enableSegmentation,
+    options.enableKeypoints,
+  ].filter(Boolean).length;
+}
+
+/**
+ * Validates if at least one task is enabled.
+ */
+export function validateOptions(options: ProcessingOptions): boolean {
+  return getEnabledTaskCount(options) > 0;
 }
