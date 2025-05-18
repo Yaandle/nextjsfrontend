@@ -1,5 +1,27 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+The frontend includes the following key components: 
+
+Library Files: 
+
+- lib/imageProcessing.ts: Handles image processing utilities 
+
+- lib/dataProcessing.ts: Manages data transformation
+
+UI Components: 
+
+- components/processing/ImageUploader.tsx: Handles image uploads
+
+- components/processing/ImageDisplay.tsx: Displays processed images
+
+- components/processing/ModelSelector.tsx: Selects models and processing options
+
+
+
+
+
+
+
 ## Getting Started
 
 First, run the development server:
